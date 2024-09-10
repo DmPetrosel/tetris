@@ -6,6 +6,10 @@
 *.ko
 *.obj
 *.elf
+*.gcno 
+*.gcda
+.vscode
+.vscode/settings.json
 
 # Linker output
 *.ilk
