@@ -21,7 +21,7 @@ int lvlproc(board_t *map, game_stats_t *stats)
             else
                 map->ways[i][strcspn(map->ways[i], "\n")] = '\0';
         }
-        fclose(level);
+        fclose(level); // ХУЙ
     }
     else
         rc = ERROR;
