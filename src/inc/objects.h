@@ -4,6 +4,8 @@
 #include <ncurses.h>
 #include <locale.h>
 #include <time.h>
+#include <stdlib.h>
+
 #define ROWS_FIELD 20
 #define COLS_FIELD 10
 

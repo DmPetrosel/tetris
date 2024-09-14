@@ -1,4 +1,4 @@
-#include "objects.h"
+#include "../inc/objects.h"
 
 typedef enum {
     Start,
@@ -35,7 +35,13 @@ typedef struct {
 typedef struct {
     signals signal;
     Game_t state;
+    Brick_t brick;
 }params_t;
+
+typedef struct {
+    int matrix[4][4];
+    int x, y;
+}Brick_t;
 
 typedef struct {
     char field[ROWS_FIELD][COLS_FIELD];
@@ -128,8 +134,35 @@ void spawn(params_t *prms){
 
 
 }
+typedef enum {
+    STICK = 0,
+}BrickName;
 
-void generate_figure(){
-
+void generate_figure(Brick_t *brick){
+    brick->x = COLS_FIELD/2-2;
+    brick->y = 0;
+    for(int i = 0; i < 4*4; i++){
+        brick->matrix[i/4][i%4] = 0;
+    }
+    time_t now;
+    struct tm * timeinfo;
+    time(&now);
+    timeinfo = localtime(&now);
+    int randomizer = (ranD(1000)*timeinfo->tm_min*timeinfo->tm_sec)%2;
+    switch(randomizer){
+        case 0:
+            brick->matrix[0][0] = 1;
+            brick->matrix[0][1] = 1;
+            brick->matrix[0][2] = 1;
+            brick->matrix[0][3] = 1;
+            break;
+        case 1:
+            brick->matrix[0][1] = 1;
+            brick->matrix[0][1] = 1;
+            brick->matrix[1][1] = 1;
+            brick->matrix[1][2] = 1;
+            break;
+            
+    }
 
 } 

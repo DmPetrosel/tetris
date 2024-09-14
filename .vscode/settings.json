@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "defines.h": "c",
+        "frog_frontend.h": "c",
+        "frog_backend.h": "c",
+        "objects.h": "c",
+        "string.h": "c"
+    }
+}
