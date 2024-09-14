@@ -22,6 +22,8 @@
 #define ROWS_FIELD 20
 #define COLS_FIELD 10
 
+#define BRICK_N 4
+
 #define SUCCESS   0
 #define ERROR     1
 

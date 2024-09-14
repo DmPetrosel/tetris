@@ -28,19 +28,22 @@ typedef enum {
 } GameState_t;
 
 typedef struct {
-    game_field curren_field;
+    game_field current_field;
     GameState_t current_state; 
+    Brick_t current_brick;
+    Brick_t next_gen_brick;
+    Brick_t next_brick;
 } Game_t;
 
 typedef struct {
     signals signal;
-    Game_t state;
-    Brick_t brick;
+    Game_t  state;
 }params_t;
 
 typedef struct {
     int matrix[4][4];
     int x, y;
+    int allowed; // 1 True, 0 Not allowed
 }Brick_t;
 
 typedef struct {
@@ -60,6 +63,9 @@ void gameover(params_t *prms);
 void exitstate(params_t *prms);
 void check(params_t *prms);
 
+
+void appear(params_t *prms);
+void varnish(params_t *prms);
 
 void generate_figure();
 
@@ -126,13 +132,53 @@ signals get_signal(int user_input)
 
     return current_signal;
 }
+int check_allowed(params_t *prms){
+    prms->state.next_gen_brick.allowrd = 1;
+    for(int y = prms->state.next_gen_brick.y, i = 0; y < BRICK_N+prms->state.next_gen_brick.y && prms->state.next_gen_brick.allowrd != 0; y++, i++){
+        for(int x = prms->state.next_gen_brick.x, j = 0; x < BRICK_N + prms->state.next_gen_brick.x && prms->state.next_gen_brick.allowrd != 0; x++, j++){
+            if(prms->state.current_field.field[y][x]&prms->state.next_gen_brick.matrix[i][j] == 1 ||
+            y<0 || x < 0 || y+ BRICK_N > ROWS_FIELD || x + BRICK_N > COLS_FIELD){
+                prms->state.next_gen_brick.allowrd = 0;
+            }
+
+        }
+    }
+    return prms->state.next_gen_brick.allowrd;
+}
 
 void spawn(params_t *prms){
+prms->state.current_brick = prms->state.next_brick;
+generate_figure(prms->state.next_brick);
+int allowed = check_allowed(prms);
+if(allowed){
+    appear(prms);
+}
 
+}
 
-
-
-
+void moved(params_t *prms){
+    prms->state.next_gen_brick = prms->state.current_brick;
+    prms->state.next_gen_brick.y+=1;
+    if(check_allowed(prms)){
+        varnish(prms);
+        prms->state.current_brick = prms->state.next_gen_brick;
+        appear(prms);
+    }
+}
+void appear(params_t *prms){
+    for(int y = prms->state.current_brick.y, i = 0; y < BRICK_N+prms->state.current_brick.y && prms->state.current_brick.allowrd != 0; y++, i++){
+        for(int x = prms->state.current_brick.x, j = 0; x < BRICK_N + prms->state.current_brick.x && prms->state.current_brick.allowrd != 0; x++, j++){
+            prms->state.current_field.field[y][x] = prms->state.current_brick.matrix[i][j];
+        }
+    }
+}
+void varnish(params_t *prms){
+    for(int y = prms->state.current_brick.y, i = 0; y < BRICK_N+prms->state.current_brick.y && prms->state.current_brick.allowrd != 0; y++, i++){
+        for(int x = prms->state.current_brick.x, j = 0; x < BRICK_N + prms->state.current_brick.x && prms->state.current_brick.allowrd != 0; x++, j++){
+            if(prms->state.current_field.field[y][x] == prms->state.current_brick.matrix[i][j])
+                prms->state.current_field.field[y][x] = 0;
+        }
+    }
 }
 typedef enum {
     STICK = 0,
@@ -141,8 +187,9 @@ typedef enum {
 void generate_figure(Brick_t *brick){
     brick->x = COLS_FIELD/2-2;
     brick->y = 0;
-    for(int i = 0; i < 4*4; i++){
-        brick->matrix[i/4][i%4] = 0;
+    brick->allowed = 1;
+    for(int i = 0; i < BRICK_N; i++){
+        brick->matrix[i/BRICK_N][i%BRICK_N] = 0;
     }
     time_t now;
     struct tm * timeinfo;
