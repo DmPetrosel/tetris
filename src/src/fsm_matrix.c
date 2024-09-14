@@ -188,28 +188,72 @@ void generate_figure(Brick_t *brick){
     brick->x = COLS_FIELD/2-2;
     brick->y = 0;
     brick->allowed = 1;
-    for(int i = 0; i < BRICK_N; i++){
+    for(int i = 0; i < BRICK_N*BRICK_N; i++){
         brick->matrix[i/BRICK_N][i%BRICK_N] = 0;
     }
     time_t now;
     struct tm * timeinfo;
     time(&now);
     timeinfo = localtime(&now);
-    int randomizer = (ranD(1000)*timeinfo->tm_min*timeinfo->tm_sec)%2;
+    int randomizer = (ranD(1000)*timeinfo->tm_min*timeinfo->tm_sec)%7;
     switch(randomizer){
         case 0:
+            /*####*/
             brick->matrix[0][0] = 1;
             brick->matrix[0][1] = 1;
             brick->matrix[0][2] = 1;
             brick->matrix[0][3] = 1;
             break;
         case 1:
+            /*##
+            ___##*/
             brick->matrix[0][1] = 1;
             brick->matrix[0][1] = 1;
             brick->matrix[1][1] = 1;
             brick->matrix[1][2] = 1;
             break;
-            
+        case 2:
+            /*#
+            __###*/
+            brick->matrix[0][1] = 1;
+            brick->matrix[1][0] = 1;
+            brick->matrix[1][1] = 1;
+            brick->matrix[1][2] = 1;
+            break;
+
+        case 3:
+            /*__#
+            __###*/
+            brick->matrix[0][2] = 1;
+            brick->matrix[1][0] = 1;
+            brick->matrix[1][1] = 1;
+            brick->matrix[1][2] = 1;
+            break;
+
+        case 4:
+            /*##
+            __##*/
+            brick->matrix[0][0] = 1;
+            brick->matrix[0][1] = 1;
+            brick->matrix[1][0] = 1;
+            brick->matrix[1][1] = 1;
+            break;
+        case 5:
+            /*_##
+            __##_*/
+            brick->matrix[0][1] = 1;
+            brick->matrix[0][2] = 1;
+            brick->matrix[1][0] = 1;
+            brick->matrix[1][1] = 1;
+            break;
+        case 6:
+            /*_#_
+            __###*/
+            brick->matrix[0][1] = 1;
+            brick->matrix[1][0] = 1;
+            brick->matrix[1][1] = 1;
+            brick->matrix[1][2] = 1;
+            break;
     }
 
 } 
