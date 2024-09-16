@@ -38,14 +38,14 @@ void exitstate(params_t *prms);
 void check(params_t *prms);
 
 action fsm_table[8][7] = {
-    {NULL, NULL, NULL, NULL, exitstate, spawn, NULL},
-    {spawn, spawn, spawn, spawn, spawn, spawn, spawn},
-    {moveup, movedown, moveright, moveleft, exitstate, check, check},
-    {shifting, shifting, shifting, shifting, shifting, shifting, shifting},
-    {reach, reach, reach, reach, reach, reach, reach},
-    {collide, collide, collide, collide, collide, collide, collide},
-    {gameover, gameover, gameover, gameover, gameover, gameover, gameover},
-    {exitstate, exitstate, exitstate, exitstate, exitstate, exitstate, exitstate}
+    {NULL,      NULL,       NULL,       NULL,       exitstate,  spawn,      NULL},
+    {spawn,     spawn,      spawn,      spawn,      spawn,      spawn,      spawn},
+    {moveup,    movedown,   moveright,  moveleft,   exitstate,  check,      check},
+    {shifting,  shifting,   shifting,   shifting,   shifting,   shifting,   shifting},
+    {reach,     reach,      reach,      reach,      reach,      reach,      reach},
+    {collide,   collide,    collide,    collide,    collide,    collide,    collide},
+    {gameover,  gameover,   gameover,   gameover,   gameover,   gameover,   gameover},
+    {exitstate, exitstate,  exitstate,  exitstate,  exitstate,  exitstate,  exitstate}
 };
 
 void sigact(signals sig, frog_state *state, game_stats_t *stats, board_t *map, player_pos *frog_pos)
