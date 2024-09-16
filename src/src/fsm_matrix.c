@@ -1,55 +1,6 @@
+#include <time.h>
 #include "../inc/objects.h"
-
-typedef enum {
-    Start,
-    Pause,
-    Terminate,
-    Left,
-    Right,
-    Up,
-    Down,
-    Action
-} UserAction_t;
-
-typedef enum
-{
-    MOVE_UP,
-    MOVE_DOWN,
-    MOVE_RIGHT,
-    MOVE_LEFT,
-    NOSIG
-} signals;
-
-typedef enum {
-    START,
-    SPAWN,
-    MOVING,
-    COLLIDE,
-    GAMEOVER,
-} GameState_t;
-
-typedef struct {
-    game_field current_field;
-    GameState_t current_state; 
-    Brick_t current_brick;
-    Brick_t next_gen_brick;
-    Brick_t next_brick;
-} Game_t;
-
-typedef struct {
-    signals signal;
-    Game_t  state;
-}params_t;
-
-typedef struct {
-    int matrix[4][4];
-    int x, y;
-    int allowed; // 1 True, 0 Not allowed
-}Brick_t;
-
-typedef struct {
-    char field[ROWS_FIELD][COLS_FIELD];
-}game_field;
+#include "../src/frontend/frontend.h"
 
 typedef void (*action)(params_t *prms);
 
@@ -100,8 +51,13 @@ void game_loop()
     
 
     while (break_flag) {   
+        print_game_field(state);
         sigact(get_signal(signal), state.current_state);
         signal = GET_USER_INPUT;
+
+
+        timeout(150);
+
     }
 }
 
