@@ -145,7 +145,7 @@ void start(params_t *prms){
 
 void gameover(params_t *prms){
 
-    prms->state.current_field.field = ;
+    //prms->state.current_field.field = ;
 
 
 }
