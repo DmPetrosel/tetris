@@ -154,6 +154,8 @@ void collide(params_t *prms){
 
     if(CUR_BRICK_Y <= 0){
         prms->state.current_state = GAMEOVER;
+    }else{
+        prms->state.current_state = SPAWN;
     }
 }
 
