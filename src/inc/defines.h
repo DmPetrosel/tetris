@@ -6,19 +6,14 @@
 
 #define GET_USER_INPUT getch()
 
-#define MVPRINTW(y, x, ...) \
-  mvprintw(BOARDS_BEGIN + (y), BOARDS_BEGIN + (x), __VA_ARGS__)
 
 #define WIN_INIT(time) {\
                              initscr();\
                              noecho();\
                              curs_set(0);\
                              keypad(stdscr, TRUE);\
-                             timeout(time);\
                         }
 
-#define ROWS_FIELD 20
-#define COLS_FIELD 10
 
 #define BRICK_N 4
 

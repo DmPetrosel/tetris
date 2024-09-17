@@ -37,6 +37,20 @@ typedef enum {
 } GameState_t;
 
 typedef struct {
+
+    char field[ROWS_FIELD][COLS_FIELD];
+
+}game_field;
+
+typedef struct {
+
+    int matrix[4][4];
+    int x, y;
+    int allowed; // 1 True, 0 Not allowed
+    
+}Brick_t;
+
+typedef struct {
     game_field current_field;
     GameState_t current_state; 
     Brick_t current_brick;
@@ -49,18 +63,7 @@ typedef struct {
     Game_t  state;
 }params_t;
 
-typedef struct {
-    int matrix[4][4];
-    int x, y;
-    int allowed; // 1 True, 0 Not allowed
-}Brick_t;
 
-typedef struct {
-    char field[ROWS_FIELD][COLS_FIELD];
-}game_field;
 
-void userInput(UserAction_t action, bool hold);
-
-GameInfo_t updateCurrentState();
 
 #endif
