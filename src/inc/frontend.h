@@ -3,7 +3,7 @@
 
 #include "objects.h"
 
-bool print_game_field(Game_t game);
+void print_game_field(Game_t game);
 
 
 #endif
