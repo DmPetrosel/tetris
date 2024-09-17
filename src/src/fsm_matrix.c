@@ -1,6 +1,6 @@
 #include <time.h>
 #include "../inc/objects.h"
-#include "../src/frontend/frontend.h"
+#include "../inc/frontend.h"
 
 typedef void (*action)(params_t *prms);
 
@@ -8,11 +8,13 @@ void sigact(signals sig, Game_t *state);
 
 signals get_signal(int user_input);
 
+void game_loop();
+
 void start(params_t *prms);
 void spawn(params_t *prms);
 void moved(params_t *prms);
 void collide(params_t *prms);
-void gameover(params_t *prms);
+void gameover();
 void exitstate(params_t *prms);
 void check(params_t *prms);
 void game_over_func(params_t *prms);
@@ -35,7 +37,6 @@ int main(void)
 {
     WIN_INIT(50);
     setlocale(LC_ALL, "");
-    print_overlay();
     game_loop();
     endwin();
 
@@ -45,19 +46,18 @@ int main(void)
 void game_loop()
 {
     Game_t state; // заинициализировать структуру
+    
+    for(int i = 0; i < ROWS_FIELD * COLS_FIELD; i++){
+        state.current_field.field[i / ROWS_FIELD][i % COLS_FIELD] = 0;
+    }
     state.current_state = START;
-    signals signal = NOSIG;
     int break_flag = TRUE;
     
 
     while (break_flag) {   
         print_game_field(state);
-        sigact(get_signal(signal), state.current_state);
-        signal = GET_USER_INPUT;
-
-
-        timeout(150);
-
+        timeout(1000);
+        sigact(get_signal(GET_USER_INPUT), &state);
     }
 }
 
@@ -67,7 +67,7 @@ void sigact(signals sig, Game_t *state)
     params_t params;
     
     params.signal = sig;
-    params.state.current_state = state;
+    params.state.current_state = state->current_state;
     
 
     act = fsm_table[params.state.current_state][params.signal];
@@ -94,15 +94,15 @@ signals get_signal(int user_input)
 
 void start(params_t *prms){
 
-    generate_figure(prms->state.next_brick);
+    generate_figure(&prms->state.next_brick);
     prms->state.current_state = SPAWN;
 
 }
 
-void gameover(params_t *prms){
+void gameover(){
 
     //prms->state.current_field.field = ;
-
+    return;
 
 }
 
@@ -119,7 +119,7 @@ int check_allowed(params_t *prms){
     ALLOWED = 1;
     for(int y = NG_BRICK_Y, i = 0; y < BRICK_N + NG_BRICK_Y && ALLOWED; y++, i++){
         for(int x = NG_BRICK_X, j = 0; x < BRICK_N + NG_BRICK_X && ALLOWED; x++, j++){
-            if(prms->state.current_field.field[y][x] & prms->state.next_gen_brick.matrix[i][j] == 1 && NG_BRICK_Y - CUR_BRICK_Y == 1) {
+            if((prms->state.current_field.field[y][x] & prms->state.next_gen_brick.matrix[i][j]) == 1 && NG_BRICK_Y - CUR_BRICK_Y == 1) {
                 prms->state.current_state = COLLIDE;
             } else if (y < 0 || x < 0 || y + BRICK_N > ROWS_FIELD || x + BRICK_N > COLS_FIELD){    
                 ALLOWED = 0;
@@ -131,7 +131,7 @@ int check_allowed(params_t *prms){
 
 void spawn(params_t *prms){
     prms->state.current_brick = prms->state.next_brick;
-    generate_figure(prms->state.next_brick);
+    generate_figure(&prms->state.next_brick);
     int allowed = check_allowed(prms);
     if(allowed){
         appear(prms);
