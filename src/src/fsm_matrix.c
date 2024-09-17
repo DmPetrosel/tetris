@@ -2,7 +2,8 @@
 #include "../inc/objects.h"
 #include "../inc/frontend.h"
 
-typedef void (*action)(params_t *prms);
+typedef void (*action)(Game_t *state);
+
 
 void sigact(signals sig, Game_t *state, int* frame);
 
@@ -10,18 +11,18 @@ signals get_signal(int user_input);
 
 void game_loop();
 
-void start(params_t *prms);
-void spawn(params_t *prms);
-void moved(params_t *prms);
-void collide(params_t *prms);
+void start(Game_t *state);
+void spawn(Game_t *state);
+void moved(Game_t *state);
+void collide(Game_t *state);
 void gameover();
-void exitstate(params_t *prms);
-void check(params_t *prms);
-void game_over_func(params_t *prms);
+void exitstate(Game_t *state);
+void check(Game_t *state);
+void game_over_func(Game_t *state);
 
 
-void appear(params_t *prms);
-void varnish(params_t *prms);
+void appear(Game_t *state);
+void varnish(Game_t *state);
 
 void generate_figure(Brick_t *brick);
 
@@ -64,17 +65,15 @@ void game_loop()
 }
 
 void sigact(signals sig, Game_t *state, int* frame)
-{
-    params_t params;
-    params.signal = sig;
-    params.state.current_state = state->current_state;
-    action act = fsm_table[params.state.current_state][params.signal];
+{   
 
-    mvprintw(10, 30, "%d", *frame);
+    action act = fsm_table[state->current_state][sig];
+
+    mvprintw(10, 30, "%d %d %d", *frame, state->current_state, sig);
     ++(*frame);
 
     if (act)
-        act(&params);
+        act(state);
 }
 
 signals get_signal(int user_input)
@@ -93,10 +92,10 @@ signals get_signal(int user_input)
     return current_signal;
 }
 
-void start(params_t *prms){
+void start(Game_t *state){
 
-    generate_figure(&prms->state.next_brick);
-    prms->state.current_state = SPAWN;
+    generate_figure(&state->next_brick);
+    state->current_state = SPAWN;
 
 }
 
@@ -107,21 +106,21 @@ void gameover(){
 
 }
 
-void collide(params_t *prms){
+void collide(Game_t *state){
 
     if(CUR_BRICK_Y <= 0){
-        prms->state.current_state = GAMEOVER;
+        state->current_state = GAMEOVER;
     }else{
-        prms->state.current_state = SPAWN;
+        state->current_state = SPAWN;
     }
 }
 
-int check_allowed(params_t *prms){
+int check_allowed(Game_t *state){
     ALLOWED = 1;
-    for(int y = NG_BRICK_Y, i = 0; y < BRICK_N + NG_BRICK_Y && ALLOWED; y++, i++){
-        for(int x = NG_BRICK_X, j = 0; x < BRICK_N + NG_BRICK_X && ALLOWED; x++, j++){
-            if((prms->state.current_field.field[y][x] & prms->state.next_gen_brick.matrix[i][j]) == 1 && NG_BRICK_Y - CUR_BRICK_Y == 1) {
-                prms->state.current_state = COLLIDE;
+    for(int y = NG_BRICK_Y, i = 0; y < BRICK_N && ALLOWED; y++, i++){
+        for(int x = NG_BRICK_X, j = 0; x < BRICK_N && ALLOWED; x++, j++){
+            if((state->current_field.field[y][x] & state->next_gen_brick.matrix[i][j]) == 1 && NG_BRICK_Y - CUR_BRICK_Y == 1) {
+                state->current_state = COLLIDE;
             } else if (y < 0 || x < 0 || y + BRICK_N > ROWS_FIELD || x + BRICK_N > COLS_FIELD){    
                 ALLOWED = 0;
             }
@@ -130,42 +129,42 @@ int check_allowed(params_t *prms){
     return ALLOWED;
 }
 
-void spawn(params_t *prms){
-    prms->state.current_brick = prms->state.next_brick;
-    generate_figure(&prms->state.next_brick);
-    int allowed = check_allowed(prms);
+void spawn(Game_t *state){
+    state->current_brick = state->next_brick;
+    generate_figure(&state->next_brick);
+    int allowed = check_allowed(state);
     if(allowed){
-        appear(prms);
-        prms->state.current_state = MOVING;
+        appear(state);
+        state->current_state = MOVING;
     } else{
-        prms->state.current_state = COLLIDE;
+        state->current_state = COLLIDE;
     }
 }
 
-void moved(params_t *prms){
-    prms->state.next_gen_brick = prms->state.current_brick;
+void moved(Game_t *state){
+    state->next_gen_brick = state->current_brick;
     ++NG_BRICK_Y;
-    if(check_allowed(prms)){
-        varnish(prms);
-        prms->state.current_brick = prms->state.next_gen_brick;
-        appear(prms);
-        prms->state.current_state = MOVING;
+    if(check_allowed(state)){
+        varnish(state);
+        state->current_brick = state->next_gen_brick;
+        appear(state);
+        state->current_state = MOVING;
     }else {
-        prms->state.current_state = COLLIDE;
+        state->current_state = COLLIDE;
     }
 }
-void appear(params_t *prms){
+void appear(Game_t *state){
     for(int y = CUR_BRICK_Y, i = 0; y < BRICK_N + CUR_BRICK_Y && ALLOWED; y++, i++){
         for(int x = CUR_BRICK_X, j = 0; x < BRICK_N + CUR_BRICK_X && ALLOWED; x++, j++){
-            prms->state.current_field.field[y][x] = prms->state.current_brick.matrix[i][j];
+            state->current_field.field[y][x] = state->current_brick.matrix[i][j];
         }
     }
 }
-void varnish(params_t *prms){
+void varnish(Game_t *state){
     for(int y = CUR_BRICK_Y, i = 0; y < BRICK_N + CUR_BRICK_Y && ALLOWED; y++, i++){
         for(int x = CUR_BRICK_X, j = 0; x < BRICK_N + CUR_BRICK_X && ALLOWED; x++, j++){
-            if(prms->state.current_field.field[y][x] == prms->state.current_brick.matrix[i][j])
-                prms->state.current_field.field[y][x] = 0;
+            if(state->current_field.field[y][x] == state->current_brick.matrix[i][j])
+                state->current_field.field[y][x] = 0;
         }
     }
 }
@@ -180,11 +179,12 @@ void generate_figure(Brick_t *brick){
     for(int i = 0; i < BRICK_N*BRICK_N; i++){
         brick->matrix[i/BRICK_N][i%BRICK_N] = 0;
     }
-    time_t now;
-    struct tm * timeinfo;
-    time(&now);
-    timeinfo = localtime(&now);
-    int randomizer = (rand()*timeinfo->tm_min*timeinfo->tm_sec)%7;
+    // time_t now;
+    // struct tm * timeinfo;
+    // time(&now);
+    // timeinfo = localtime(&now);
+    // int randomizer = (rand()*timeinfo->tm_min*timeinfo->tm_sec)%7;
+    int randomizer = 0;
     switch(randomizer){
         case 0:
             /*####*/

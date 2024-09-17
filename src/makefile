@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -I inc -std=c11 -Wall -Werror -Wextra
+CFLAGS := -I inc -std=c11 -Wall -Werror -Wextra -g
 OBJS := out/fsm_matrix.o out/frontend.o
 
 all: clean tetris

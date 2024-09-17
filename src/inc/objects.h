@@ -58,11 +58,6 @@ typedef struct {
     Brick_t next_brick;
 } Game_t;
 
-typedef struct {
-    signals signal;
-    Game_t  state;
-}params_t;
-
 
 
 

@@ -17,13 +17,13 @@
 
 #define BRICK_N 4
 
-#define NG_BRICK_Y prms->state.next_gen_brick.y
-#define NG_BRICK_X prms->state.next_gen_brick.x
+#define NG_BRICK_Y state->next_gen_brick.y
+#define NG_BRICK_X state->next_gen_brick.x
 
-#define CUR_BRICK_Y prms->state.current_brick.y
-#define CUR_BRICK_X prms->state.current_brick.x
+#define CUR_BRICK_Y state->current_brick.y
+#define CUR_BRICK_X state->current_brick.x
 
-#define ALLOWED prms->state.next_gen_brick.allowed
+#define ALLOWED state->next_gen_brick.allowed
 
 #define SUCCESS   0
 #define ERROR     1
