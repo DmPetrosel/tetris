@@ -4,7 +4,7 @@
 
 typedef void (*action)(params_t *prms);
 
-void sigact(signals sig, Game_t *state);
+void sigact(signals sig, Game_t *state, int* frame);
 
 signals get_signal(int user_input);
 
@@ -47,30 +47,31 @@ void game_loop()
 {
     Game_t state; // заинициализировать структуру
     
-    for(int i = 0; i < ROWS_FIELD * COLS_FIELD; i++){
-        state.current_field.field[i / ROWS_FIELD][i % COLS_FIELD] = 0;
+    for(int i = 0; i < ROWS_FIELD; i++){
+        for(int j = 0; j < COLS_FIELD; j++){
+            state.current_field.field[i][j] = 0;
+        }
     }
     state.current_state = START;
     int break_flag = TRUE;
     
-
+    int frame = 0;
     while (break_flag) {   
         print_game_field(state);
         timeout(1000);
-        sigact(get_signal(GET_USER_INPUT), &state);
+        sigact(get_signal(GET_USER_INPUT), &state, &frame);
     }
 }
 
-void sigact(signals sig, Game_t *state)
+void sigact(signals sig, Game_t *state, int* frame)
 {
-    action act = NULL;
     params_t params;
-    
     params.signal = sig;
     params.state.current_state = state->current_state;
-    
+    action act = fsm_table[params.state.current_state][params.signal];
 
-    act = fsm_table[params.state.current_state][params.signal];
+    mvprintw(10, 30, "%d", *frame);
+    ++(*frame);
 
     if (act)
         act(&params);
