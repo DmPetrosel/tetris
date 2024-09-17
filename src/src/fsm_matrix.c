@@ -164,7 +164,9 @@ void moved(Game_t *state){
 void appear(Game_t *state){
     for(int y = CUR_BRICK_Y, i = 0; y < BRICK_N + CUR_BRICK_Y; y++, i++){
         for(int x = CUR_BRICK_X, j = 0; x < BRICK_N + CUR_BRICK_X; x++, j++){
-            state->current_field.field[y][x] = state->current_brick.matrix[i][j];
+            if(state->current_brick.matrix[i][j] != 0){
+                state->current_field.field[y][x] = state->current_brick.matrix[i][j];
+            }
         }
     }
 }
