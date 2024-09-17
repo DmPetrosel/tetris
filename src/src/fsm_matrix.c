@@ -122,23 +122,28 @@ int check_allowed(Game_t *state){
     return ALLOWED;
 }
 int check_collide(Game_t *state){
-    ALLOWED = 1;
-    for(int y = NG_BRICK_Y, i = 0; y < BRICK_N && ALLOWED; y++, i++){
-        for(int x = NG_BRICK_X, j = 0; x < BRICK_N && ALLOWED; x++, j++){
-            if (x < 0 || y + BRICK_N >= ROWS_FIELD || x + BRICK_N > COLS_FIELD){    
-                ALLOWED = 0;
-                state->current_state = COLLIDE;
-            }
-            if((state->current_field.field[y][x] & state->next_gen_brick.matrix[i][j]) == 1 && NG_BRICK_Y - CUR_BRICK_Y == 1) {
-                state->current_state = COLLIDE;
+    int collide = 0;
+    // for(int y = CUR_BRICK_Y, i = 0; y < BRICK_N; y++, i++){
+    //     for(int x = CUR_BRICK_X, j = 0; x < BRICK_N; x++, j++){
+    //         if((state->current_field.field[y][x] & state->next_gen_brick.matrix[i][j]) == 1 && NG_BRICK_Y - CUR_BRICK_Y == 1) {
+    //             collide = 1;
+    //         }
+    //     }
+    // }
+    for(int y = NG_BRICK_Y, i = 0; y < BRICK_N + NG_BRICK_Y; y++, i++){
+        for(int x = NG_BRICK_X, j = 0; x < BRICK_N + NG_BRICK_X; x++, j++){
+            if((state->current_field.field[y][x]&state->next_gen_brick.matrix[i][j]) == 1){
+                 collide = 1;
             }
         }
     }
-    return ALLOWED;
+
+    return collide;
 }
 
 void spawn(Game_t *state){
     state->current_brick = state->next_brick;
+    // NG_BRICK_Y = ++CUR_BRICK_Y;
     generate_figure(&state->next_brick);
     int allowed = check_allowed(state);
     if(allowed){
@@ -151,8 +156,8 @@ void spawn(Game_t *state){
 
 void moved(Game_t *state){
     state->next_gen_brick = state->current_brick;
-    ++NG_BRICK_Y;
-    if(check_allowed(state)){
+    if(check_allowed(state) && check_collide(state)){
+        ++NG_BRICK_Y;
         varnish(state);
         state->current_brick = state->next_gen_brick;
         appear(state);
