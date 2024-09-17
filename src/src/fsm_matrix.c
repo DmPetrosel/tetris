@@ -114,15 +114,23 @@ void collide(Game_t *state){
         state->current_state = SPAWN;
     }
 }
-
 int check_allowed(Game_t *state){
+    ALLOWED = 0;
+            if (CUR_BRICK_Y >= 0 && CUR_BRICK_Y < ROWS_FIELD - 1){    
+                ALLOWED = 1;
+            }
+    return ALLOWED;
+}
+int check_collide(Game_t *state){
     ALLOWED = 1;
     for(int y = NG_BRICK_Y, i = 0; y < BRICK_N && ALLOWED; y++, i++){
         for(int x = NG_BRICK_X, j = 0; x < BRICK_N && ALLOWED; x++, j++){
+            if (x < 0 || y + BRICK_N >= ROWS_FIELD || x + BRICK_N > COLS_FIELD){    
+                ALLOWED = 0;
+                state->current_state = COLLIDE;
+            }
             if((state->current_field.field[y][x] & state->next_gen_brick.matrix[i][j]) == 1 && NG_BRICK_Y - CUR_BRICK_Y == 1) {
                 state->current_state = COLLIDE;
-            } else if (y < 0 || x < 0 || y + BRICK_N > ROWS_FIELD || x + BRICK_N > COLS_FIELD){    
-                ALLOWED = 0;
             }
         }
     }
@@ -154,8 +162,8 @@ void moved(Game_t *state){
     }
 }
 void appear(Game_t *state){
-    for(int y = CUR_BRICK_Y, i = 0; y < BRICK_N + CUR_BRICK_Y && ALLOWED; y++, i++){
-        for(int x = CUR_BRICK_X, j = 0; x < BRICK_N + CUR_BRICK_X && ALLOWED; x++, j++){
+    for(int y = CUR_BRICK_Y, i = 0; y < BRICK_N + CUR_BRICK_Y; y++, i++){
+        for(int x = CUR_BRICK_X, j = 0; x < BRICK_N + CUR_BRICK_X; x++, j++){
             state->current_field.field[y][x] = state->current_brick.matrix[i][j];
         }
     }
