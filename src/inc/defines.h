@@ -23,7 +23,7 @@
 #define CUR_BRICK_Y state->current_brick.y
 #define CUR_BRICK_X state->current_brick.x
 
-#define ALLOWED state->next_gen_brick.allowed
+#define ALLOWED state->current_brick.allowed
 
 #define SUCCESS   0
 #define ERROR     1

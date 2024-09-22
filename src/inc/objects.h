@@ -19,6 +19,14 @@ typedef enum {
     Action
 } UserAction_t;
 
+typedef enum {
+    START,
+    SPAWN,
+    MOVING,
+    COLLIDE,
+    GAMEOVER,
+} GameState_t;
+
 typedef enum
 {
     MOVE_UP,
@@ -27,14 +35,6 @@ typedef enum
     MOVE_LEFT,
     NOSIG
 } signals;
-
-typedef enum {
-    START,
-    SPAWN,
-    MOVING,
-    COLLIDE,
-    GAMEOVER,
-} GameState_t;
 
 typedef struct {
 
@@ -51,11 +51,22 @@ typedef struct {
 }Brick_t;
 
 typedef struct {
+    int **field;
+    int **next;
+    int score;
+    int high_score;
+    int level;
+    int speed;
+    int pause;
+} GameInfo_t;
+
+
+typedef struct {
     game_field current_field;
     GameState_t current_state; 
     Brick_t current_brick;
-    Brick_t next_gen_brick;
     Brick_t next_brick;
+    GameInfo_t game_info;
 } Game_t;
 
 
