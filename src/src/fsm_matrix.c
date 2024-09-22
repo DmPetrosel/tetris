@@ -8,9 +8,9 @@ Brick_t rotate_brick(Game_t *state);
 void check_strike(Game_t *state);
 void shift_field_down(Game_t *state, int end_y, int rows_quantity);
 void clean_screan(Game_t *state);
-void sigact(signals sig, Game_t *state, int* frame);
+void sigact(UserAction_t sig, Game_t *state, int* frame);
 
-signals get_signal(int user_input);
+UserAction_t get_signal(int user_input);
 
 void game_loop();
 
@@ -25,22 +25,25 @@ void gameover();
 void exitstate(Game_t *state);
 void check(Game_t *state);
 void game_over_func(Game_t *state);
+// void pause (Game_t *state);
+// void end_game(Game_t *state);
 
 int can_be_moved(Game_t *state, int delta_row, int delta_col);
-
 
 void appear(Game_t *state);
 void varnish(Game_t *state);
 
 void generate_figure(Brick_t *brick);
 
-action fsm_table[5][5] = {
-    {NULL, NULL, NULL, NULL, start},
-    {spawn, spawn, spawn, spawn, spawn},
-    {move_up, moved, move_right, move_left, moved},
-    {collide, collide, collide, collide, collide},
-    {gameover, gameover, gameover, gameover, gameover},
+action fsm_table[5][8] = {
+    {start, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {spawn, spawn, spawn, spawn, spawn, spawn, spawn, spawn},
+    {NULL, /*pause, end_game*/NULL,NULL, move_left, move_right, move_up, moved, moved},
+    {collide, collide, collide, collide, collide, collide, collide, collide},
+    {gameover, gameover, gameover, gameover, gameover, gameover, gameover, gameover},
 };
+    // TODO после реализации pause и end_game удалить нулы и раскоментировать их ^ 
+
 
 int main(void)
 {
@@ -53,7 +56,8 @@ int main(void)
 }
 
 void game_loop()
-{
+{ 
+    // иногда фигура в фигуру
     Game_t state = {0}; // заинициализировать структуру
     int start_paprer[20][10] = 
     {
@@ -97,9 +101,8 @@ void game_loop()
     }
 }
 
-void sigact(signals sig, Game_t *state, int* frame)
+void sigact(UserAction_t sig, Game_t *state, int* frame)
 {   
-
     action act = fsm_table[state->current_state][sig];
 
     mvprintw(10, 30, "%d %d %d", *frame, state->current_state, sig);
@@ -111,18 +114,26 @@ void sigact(signals sig, Game_t *state, int* frame)
     }
 }
 
-signals get_signal(int user_input)
+UserAction_t get_signal(int user_input)
 {
-    signals current_signal = NOSIG;
+    UserAction_t current_signal = Action;
 
     if (user_input == KEY_UP)
-        current_signal = MOVE_UP;
+        current_signal = Up;
     else if (user_input == KEY_DOWN)
-        current_signal = MOVE_DOWN;
+        current_signal = Down;
     else if (user_input == KEY_LEFT)
-        current_signal = MOVE_LEFT;
+        current_signal = Left;
     else if (user_input == KEY_RIGHT)
-        current_signal = MOVE_RIGHT;
+        current_signal = Right;
+    else if (user_input == ENTER_KEY)
+        current_signal = Start;
+    else if (user_input == 27)
+        printf("xui");
+        //current_signal = Pause;
+        
+    else if (user_input == KEY_DC)
+        current_signal = Terminate;
 
     return current_signal;
 }
@@ -296,7 +307,7 @@ int can_be_moved(Game_t *state, int delta_row, int delta_col){
                     fig = 0;
                 }
                 
-
+            
             // if((state->current_field.field[y][x] & state->current_brick.matrix[i][j] ) == 1 || (state->current_brick.matrix[i][j] == 1 && y > ROWS_FIELD)){
                 
             // }else if(state->current_brick.matrix[i][j] == 1) fig = 0;
@@ -327,6 +338,7 @@ void varnish(Game_t *state){
 typedef enum {
     STICK = 0,
 }BrickName;
+
 
 void generate_figure(Brick_t *brick){
     brick->x = COLS_FIELD/2-2;

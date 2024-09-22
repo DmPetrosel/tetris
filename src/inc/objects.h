@@ -27,14 +27,6 @@ typedef enum {
     GAMEOVER,
 } GameState_t;
 
-typedef enum
-{
-    MOVE_UP,
-    MOVE_DOWN,
-    MOVE_RIGHT,
-    MOVE_LEFT,
-    NOSIG
-} signals;
 
 typedef struct {
 
