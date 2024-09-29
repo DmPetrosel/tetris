@@ -21,7 +21,7 @@ void move_up(Game_t *state);
 void move_left(Game_t *state);
 void move_right(Game_t *state);
 void collide(Game_t *state);
-void gameover();
+void gameover(Game_t *state);
 void exitstate(Game_t *state);
 void check(Game_t *state);
 void game_over_func(Game_t *state);
@@ -67,9 +67,8 @@ void game_loop()
     int frame = 0;
     while (break_flag) {   
         print_game_field(state);
-        mvprintw(10,40, "score: %d", state.game_info.score);
         sigact(get_signal(GET_USER_INPUT), &state, &frame);
-        timeout(1000);
+        timeout(1000-state.game_info.speed);
 
     }
 }
@@ -118,16 +117,32 @@ for(int i = 0; i < ROWS_FIELD; i++){
     }
 }
 void start(Game_t *state){
-
+    FILE * high_score = fopen(HSFILE, "r");
+    char str_hs[20];
+    if(high_score){
+        if((fgets(str_hs, 10, high_score))){
+           state->game_info.high_score = atoi(str_hs);
+        }else
+            state->game_info.high_score = 0;
+    fclose(high_score);
+    }
     generate_figure(&state->next_brick);
     clean_screan(state);
     state->current_state = SPAWN;
 
 }
 
-void gameover(){
+void gameover(Game_t *state){
 
-    //prms->state.current_field.field = ;
+    FILE *high_score = fopen(HSFILE, "w+");
+    char str_hs[20];
+    sprintf(str_hs, "%d", state->game_info.score);
+    if(high_score){
+        if(!fputs(str_hs, high_score)){
+            // ERROR
+        }
+        fclose(high_score);
+    }
     return;
 }
 void shift_field_down(Game_t *state, int end_y, int rows_quantity){
@@ -168,10 +183,17 @@ void check_strike(Game_t *state){
             break;
         case 4: state->game_info.score+=1500;
             break;
-        
     }
     if(end)
         shift_field_down(state, end, count);
+    
+    if(state->game_info.score/600 > state->game_info.level){
+        state->game_info.level +=1;
+        if(state->game_info.level == 10){
+            state->current_state = GAMEOVER;
+        }
+        state->game_info.speed+=SPEED_STEP;
+    }
 }
 void collide(Game_t *state){
 
@@ -281,7 +303,7 @@ return res;
 int check_brick(Game_t *state, int delta_y, int delta_x, int i, int j){
     int res = 1;
     if(delta_y == 1){
-        if(i >= BRICK_N || j+delta_x < 0 || j+delta_x >= BRICK_N){
+        if(i+delta_y >= BRICK_N || j+delta_x < 0 || j+delta_x >= BRICK_N){
             res = 0;    
         }
         else{

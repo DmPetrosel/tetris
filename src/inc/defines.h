@@ -24,6 +24,9 @@
 #define CUR_BRICK_X state->current_brick.x
 
 #define ALLOWED state->current_brick.allowed
+#define HSFILE "high_score.txt"
+
+#define SPEED_STEP 70;
 
 #define SUCCESS   0
 #define ERROR     1
