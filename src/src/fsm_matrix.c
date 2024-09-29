@@ -3,7 +3,7 @@
 #include "../inc/frontend.h"
 
 typedef void (*action)(Game_t *state);
-
+int check_brick(Game_t *state, int delta_y, int delta_x, int i, int j);
 Brick_t rotate_brick(Game_t *state);
 void check_strike(Game_t *state);
 void shift_field_down(Game_t *state, int end_y, int rows_quantity);
@@ -259,38 +259,38 @@ void move_right(Game_t *state){
     }
     state->current_state = MOVING;
 }
+
 int can_be_moved(Game_t *state, int delta_row, int delta_col){
+int res = 1;
+int y = CUR_BRICK_Y +delta_row; 
+int x = CUR_BRICK_X + delta_col;
+for(int i = 0; i < BRICK_N && res; i++){
+    for(int j = 0; j < BRICK_N && res; j++){
 
-    int res = 1;
-    int fig = 1;
-    int flag = 0;
-    int x = CUR_BRICK_X + delta_col;
-    int y = CUR_BRICK_Y + delta_row;
-        for(int i = BRICK_N - 1; i >= 0 && res!=0 && fig; i--){
-            for(int j = BRICK_N - 1; j >= 0 && res!=0; j--){
-                if(state->current_brick.matrix[i][j]==1){
-                    if(state->current_field.field[y+i][x+j]== 1|| y+i >= ROWS_FIELD || x + j <0 || x+j >= COLS_FIELD)
-                        {
-                           
-                            res = 0;
-                        }
-                flag = 1;
-                }
-                if(flag && j == 0){
-                    fig = 0;
-                }
-                
-            
-            // if((state->current_field.field[y][x] & state->current_brick.matrix[i][j] ) == 1 || (state->current_brick.matrix[i][j] == 1 && y > ROWS_FIELD)){
-                
-            // }else if(state->current_brick.matrix[i][j] == 1) fig = 0;
-
-            }
+        if ((x + j < 0 || x + j >= COLS_FIELD ||
+            y + i >= ROWS_FIELD) && state->current_brick.matrix[i][j]) {
+            res = 0;
+        } else if ((state->current_field.field[y + i][x + j] &&state->current_brick.matrix[i][j] && (!check_brick(state, delta_row, delta_col, i, j)))) {
+            res = 0;
         }
-
-    return res;
+    }
 }
 
+return res;
+}
+int check_brick(Game_t *state, int delta_y, int delta_x, int i, int j){
+    int res = 1;
+    if(delta_y == 1){
+        if(i >= BRICK_N || j+delta_x < 0 || j+delta_x >= BRICK_N){
+            res = 0;    
+        }
+        else{
+            res = state->current_brick.matrix[i+delta_y][j+delta_x];
+        }
+    }
+    
+    return res; 
+}
 void appear(Game_t *state){
     for(int y = CUR_BRICK_Y, i = 0; y < BRICK_N + CUR_BRICK_Y; y++, i++){
         for(int x = CUR_BRICK_X, j = 0; x < BRICK_N + CUR_BRICK_X; x++, j++){
