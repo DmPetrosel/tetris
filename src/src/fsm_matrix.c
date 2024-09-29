@@ -21,7 +21,7 @@ void move_up(Game_t *state);
 void move_left(Game_t *state);
 void move_right(Game_t *state);
 void collide(Game_t *state);
-void gameover(Game_t *state);
+void gameover();
 void exitstate(Game_t *state);
 void check(Game_t *state);
 void game_over_func(Game_t *state);
@@ -132,17 +132,8 @@ void start(Game_t *state){
 
 }
 
-void gameover(Game_t *state){
+void gameover(){
 
-    FILE *high_score = fopen(HSFILE, "w+");
-    char str_hs[20];
-    sprintf(str_hs, "%d", state->game_info.score);
-    if(high_score){
-        if(!fputs(str_hs, high_score)){
-            // ERROR
-        }
-        fclose(high_score);
-    }
     return;
 }
 void shift_field_down(Game_t *state, int end_y, int rows_quantity){
@@ -193,6 +184,18 @@ void check_strike(Game_t *state){
             state->current_state = GAMEOVER;
         }
         state->game_info.speed+=SPEED_STEP;
+    }
+    if(state->game_info.score > state->game_info.high_score){
+        state->game_info.high_score = state->game_info.score;
+        FILE *high_score = fopen(HSFILE, "w+");
+        char str_hs[20];
+        sprintf(str_hs, "%d", state->game_info.score);
+        if(high_score){
+            if(!fputs(str_hs, high_score)){
+            // ERROR
+            }
+        fclose(high_score);
+        }
     }
 }
 void collide(Game_t *state){
@@ -264,19 +267,19 @@ void moved(Game_t *state){
     }
 }
 void move_left(Game_t *state){
-    if(can_be_moved(state, 1, -1)){
+    if(can_be_moved(state, 0, -1)){
         varnish(state);
-        ++CUR_BRICK_Y;
+        // ++CUR_BRICK_Y;
         --CUR_BRICK_X;
         appear(state);
     }
     state->current_state = MOVING;
 }
 void move_right(Game_t *state){
-    if(can_be_moved(state, 1, 1)){
+    if(can_be_moved(state, 0, 1)){
         varnish(state);
         ++CUR_BRICK_X;
-        ++CUR_BRICK_Y;
+        // ++CUR_BRICK_Y;
         appear(state);
     }
     state->current_state = MOVING;
@@ -302,7 +305,7 @@ return res;
 }
 int check_brick(Game_t *state, int delta_y, int delta_x, int i, int j){
     int res = 1;
-    if(delta_y == 1){
+    if(delta_y >= 0){
         if(i+delta_y >= BRICK_N || j+delta_x < 0 || j+delta_x >= BRICK_N){
             res = 0;    
         }
