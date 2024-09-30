@@ -4,6 +4,7 @@
         "frog_frontend.h": "c",
         "frog_backend.h": "c",
         "objects.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "frontend.h": "c"
     }
 }
