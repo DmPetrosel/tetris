@@ -14,8 +14,6 @@ out_folder:
 tetris: out_folder build_folder build
 
 build: $(OBJS) 
-	$(build_folder)
-	$(out_folder)
 	$(CC) $(CFLAGS) $^ -o build/$@ -lncurses
 
 
