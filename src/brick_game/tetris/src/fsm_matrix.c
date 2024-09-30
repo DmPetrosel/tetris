@@ -1,6 +1,6 @@
 #include <time.h>
+#include "../../../gui/cli/frontend.h"
 #include "../inc/objects.h"
-#include "../inc/frontend.h"
 
 typedef void (*action)(Game_t *state);
 int check_brick(Game_t *state, int delta_y, int delta_x, int i, int j);

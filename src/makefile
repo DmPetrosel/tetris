@@ -1,14 +1,36 @@
 CC := gcc
-CFLAGS := -I inc -std=c11 -Wall -Werror -Wextra -g
-OBJS := out/fsm_matrix.o out/frontend.o
+CFLAGS := -std=c11 -Wall -Werror -Wextra -g
+OBJS := brick_game/tetris/out/frontend.o brick_game/tetris/out/fsm_matrix.o 
 
 all: clean tetris
-	
-tetris: $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@ -lncurses
 
-out/%.o: src/%.c
+
+build_folder:
+	mkdir -p build	
+
+out_folder:
+	mkdir -p brick_game/tetris/out
+
+tetris: out_folder build_folder build
+
+build: $(OBJS) 
+	$(build_folder)
+	$(out_folder)
+	$(CC) $(CFLAGS) $^ -o build/$@ -lncurses
+
+
+brick_game/tetris/out/%.o: gui/cli/%.c
+	$(out_folder)
+	$(CC) $(CFLAGS) -c $^ -o $@
+
+brick_game/tetris/out/%.o: brick_game/tetris/src/%.c  
+	$(out_folder)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+
+
+
+
+
 clean:
-	$(RM) out/*.o tetris 	
+	rm -rf build brick_game/tetris/out

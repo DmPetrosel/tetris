@@ -1,6 +1,7 @@
 #include "frontend.h"
-#include "../inc/objects.h"
-#include "../inc/defines.h"
+#include "../../brick_game/tetris/inc/objects.h"
+#include "../../brick_game/tetris/inc/defines.h"
+
 
 
 void print_game_field(Game_t game) {
