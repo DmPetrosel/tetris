@@ -14,7 +14,7 @@ out_folder:
 tetris: out_folder build_folder build
 
 build: $(OBJS) 
-	$(CC) $(CFLAGS) $^ -o build/$@ -lncurses
+	$(CC) $(CFLAGS) $^ -o build/tetris -lncurses
 
 
 brick_game/tetris/out/%.o: gui/cli/%.c
