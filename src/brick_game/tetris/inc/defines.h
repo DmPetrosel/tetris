@@ -33,5 +33,6 @@
 
 #define ESCAPE 27
 #define ENTER_KEY 10
+#define SPACE 32
 
 #endif

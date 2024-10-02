@@ -90,7 +90,7 @@ UserAction_t get_signal(int user_input)
 {
     UserAction_t current_signal = Action;
 
-    if (user_input == KEY_UP)
+    if (user_input == SPACE)
         current_signal = Up;
     else if (user_input == KEY_DOWN)
         current_signal = Down;
@@ -100,12 +100,12 @@ UserAction_t get_signal(int user_input)
         current_signal = Right;
     else if (user_input == ENTER_KEY)
         current_signal = Start;
-    else if (user_input == 27)
-        printf("xui");
-        //current_signal = Pause;
-        
+    else if (user_input == ESCAPE)
+        current_signal = Pause;
     else if (user_input == KEY_DC)
         current_signal = Terminate;
+    else if (user_input == SPACE)
+        current_signal = Action;
 
     return current_signal;
 }

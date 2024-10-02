@@ -14,6 +14,7 @@ void print_game_field(Game_t game) {
     mvprintw(11,(2*COLS_FIELD+5), "score: %d", game.game_info.score);
     mvprintw(12,(2* COLS_FIELD+5), "high score: %d", game.game_info.high_score);
     mvprintw(13,(2* COLS_FIELD+5), "level: %d", game.game_info.level);
+    print_next(&game);
 }
 
 void print_start (Game_t *game) {
@@ -79,4 +80,12 @@ void print_pause (Game_t *game) {
             game->current_field.field[i][j] = pause_paprer[i][j];
         }
     }
+}
+void print_next(Game_t *game) {
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      if (game->next_brick.matrix[i][j] == 0) mvprintw(i + 15, j * 2 + 27, "  ");
+      if (game->next_brick.matrix[i][j] == 1) mvprintw(i + 15, j * 2 + 27, "[]");
+    }
+  }
 }
