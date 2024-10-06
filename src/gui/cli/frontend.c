@@ -89,3 +89,15 @@ void print_next(Game_t *game) {
     }
   }
 }
+
+void clear_screen(Game_t * state) {
+  for (int i = 0; i < ROWS_FIELD; i++)
+  {
+    for (int j = 0; j < COLS_FIELD; j++)
+    {
+      state->current_field.field[i][j] = 0;
+    }
+    
+  }
+  
+}

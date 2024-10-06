@@ -25,6 +25,7 @@ typedef enum {
     START,
     SPAWN,
     MOVING,
+    PAUSE, 
     COLLIDE,
     GAMEOVER,
 } GameState_t;
@@ -61,6 +62,8 @@ typedef struct {
     Brick_t current_brick;
     Brick_t next_brick;
     GameInfo_t game_info;
+    bool break_flag;
+    bool pause_flag;
 } Game_t;
 
 

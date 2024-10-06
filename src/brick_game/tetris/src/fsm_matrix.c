@@ -2,43 +2,58 @@
 #include "../../../gui/cli/frontend.h"
 #include "../inc/objects.h"
 
+Game_t * game_init();
 typedef void (*action)(Game_t *state);
-int check_brick(Game_t *state, int delta_y, int delta_x, int i, int j);
-Brick_t rotate_brick(Game_t *state);
-void check_strike(Game_t *state);
-void shift_field_down(Game_t *state, int end_y, int rows_quantity);
-void clean_screan(Game_t *state);
-void sigact(UserAction_t sig, Game_t *state, int* frame);
+int check_brick( int delta_y, int delta_x, int i, int j);
+Brick_t rotate_brick( );
+void check_strike( );
+void shift_field_down( int end_y, int rows_quantity);
+void clean_screan( );
+void userInput(UserAction_t sig, int hold);
 
 UserAction_t get_signal(int user_input);
 
 void game_loop();
 
-void start(Game_t *state);
-void spawn(Game_t *state);
-void moved(Game_t *state);
-void move_up(Game_t *state);
-void move_left(Game_t *state);
-void move_right(Game_t *state);
-void collide(Game_t *state);
+void start( );
+void spawn( );
+void moved( );
+void move_up( );
+void move_left( );
+void move_right( );
+void collide( );
 void gameover();
-void exitstate(Game_t *state);
-void check(Game_t *state);
-void game_over_func(Game_t *state);
-// void pause (Game_t *state);
-// void end_game(Game_t *state);
+void exitstate( );
+void check( );
+void game_over_func( );
+// void pause ( );
+// void end_game( );
 
-int can_be_moved(Game_t *state, int delta_row, int delta_col);
+int can_be_moved( int delta_row, int delta_col);
 
-void appear(Game_t *state);
-void varnish(Game_t *state);
+void appear( );
+void varnish( );
 
 void generate_figure(Brick_t *brick);
+void pause();
 
-action fsm_table[5][8] = {
+Game_t * game_init(){
+    static Game_t * state = NULL;
+    if (state == NULL)
+        state = malloc(sizeof(Game_t));
+    if(state == NULL){
+        printf("Error: malloc failed\n");
+        exit(1);
+    }
+    return state;
+    
+}
+
+action fsm_table[6][8] = {
     {start, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
     {spawn, spawn, spawn, spawn, spawn, spawn, spawn, spawn},
-    {NULL, /*pause, end_game*/NULL,NULL, move_left, move_right, move_up, moved, moved},
+    {NULL, /*pause, end_game*/pause,gameover, move_left, move_right, move_up, moved, moved},
+    {NULL, pause, NULL, NULL, NULL, NULL, NULL, NULL},
     {collide, collide, collide, collide, collide, collide, collide, collide},
     {gameover, gameover, gameover, gameover, gameover, gameover, gameover, gameover},
 };
@@ -58,34 +73,48 @@ int main(void)
 void game_loop()
 { 
     // иногда фигура в фигуру
-    Game_t state = {0}; // заинициализировать структуру
+    Game_t * state = game_init(); // заинициализировать структуру
    
-    print_start(&state);
-    state.current_state = START;
-    int break_flag = TRUE;
+    print_start(state);
+    state->current_state = START;
+    state->break_flag = TRUE;
     
-    int frame = 0;
-    while (break_flag) {   
-        print_game_field(state);
-        sigact(get_signal(GET_USER_INPUT), &state, &frame);
-        timeout(1000-state.game_info.speed);
+    while (state->break_flag) {   
+        if(state->pause_flag){print_pause(state);
+        print_game_field(*state);}
+        else {
+            print_game_field(*state);
+            }
+        userInput(get_signal(GET_USER_INPUT), 0);
+        timeout(1000-state->game_info.speed);
 
     }
 }
 
-void sigact(UserAction_t sig, Game_t *state, int* frame)
+void userInput(UserAction_t sig, int hold)
 {   
+    Game_t * state = game_init();
     action act = fsm_table[state->current_state][sig];
 
-    mvprintw(10, 30, "%d %d %d", *frame, state->current_state, sig);
-    ++(*frame);
-
-    if (act){
+    if (act && !hold){
         act(state);
 
     }
 }
 
+
+void pause(){
+    Game_t * state = game_init();
+    static game_field start_pause = {0};
+    state->pause_flag = !state->pause_flag;
+    if(state->pause_flag){
+        start_pause = state->current_field;
+        state->current_state= PAUSE;
+    }else{
+        state->current_state = MOVING;
+        state->current_field = start_pause;
+    }
+}
 UserAction_t get_signal(int user_input)
 {
     UserAction_t current_signal = Action;
@@ -109,14 +138,18 @@ UserAction_t get_signal(int user_input)
 
     return current_signal;
 }
-void clean_screan(Game_t *state){
-for(int i = 0; i < ROWS_FIELD; i++){
+void clean_screan( ){
+    Game_t * state = game_init();
+
+    for(int i = 0; i < ROWS_FIELD; i++){
         for(int j = 0; j < COLS_FIELD; j++){
             state->current_field.field[i][j] = 0;
         }
     }
 }
-void start(Game_t *state){
+void start( ){
+    Game_t * state = game_init();
+
     FILE * high_score = fopen(HSFILE, "r");
     char str_hs[20];
     if(high_score){
@@ -133,10 +166,12 @@ void start(Game_t *state){
 }
 
 void gameover(){
-
+    Game_t * state = game_init();
+    state->break_flag = FALSE;
     return;
 }
-void shift_field_down(Game_t *state, int end_y, int rows_quantity){
+void shift_field_down( int end_y, int rows_quantity){
+    Game_t * state = game_init();
 
     for(int y = end_y; y >= 0; y--){
         for(int x = 0; x < COLS_FIELD; x ++){
@@ -148,7 +183,9 @@ void shift_field_down(Game_t *state, int end_y, int rows_quantity){
     }
 
 }
-void check_strike(Game_t *state){
+void check_strike( ){
+    Game_t * state = game_init();
+
     int count = 0;
     int end = 0;
     for(int y = 0; y < ROWS_FIELD; y++){
@@ -176,7 +213,7 @@ void check_strike(Game_t *state){
             break;
     }
     if(end)
-        shift_field_down(state, end, count);
+        shift_field_down( end, count);
     
     if(state->game_info.score/600 > state->game_info.level){
         state->game_info.level +=1;
@@ -198,16 +235,19 @@ void check_strike(Game_t *state){
         }
     }
 }
-void collide(Game_t *state){
+void collide( ){
+    Game_t * state = game_init();
 
     if(CUR_BRICK_Y <= 0){
         state->current_state = GAMEOVER;
     }else{
-        check_strike(state);
+        check_strike( );
         state->current_state = SPAWN;
     }
 }
-int check_allowed(Game_t *state){
+int check_allowed( ){
+    Game_t * state = game_init();
+
     ALLOWED = 0;
             if (CUR_BRICK_Y >= 0 && CUR_BRICK_Y < ROWS_FIELD - 1){    
                 ALLOWED = 1;
@@ -215,13 +255,15 @@ int check_allowed(Game_t *state){
     return ALLOWED;
 }
 
-void spawn(Game_t *state){
+void spawn( ){
+    Game_t * state = game_init();
+
     state->current_brick = state->next_brick;
     // NG_BRICK_Y = ++CUR_BRICK_Y;
     generate_figure(&state->next_brick);
-    int allowed = check_allowed(state);
+    int allowed = check_allowed( );
     if(allowed){
-        appear(state);
+        appear( );
         state->current_state = MOVING;
     } else{
         state->current_state = COLLIDE;
@@ -233,7 +275,9 @@ void spawn(Game_t *state){
 // 1110
 // 0000
 
-Brick_t rotate_brick(Game_t *state){
+Brick_t rotate_brick( ){
+    Game_t * state = game_init();
+
     Brick_t previous = state->current_brick; 
     Brick_t temp;
         temp = state->current_brick;
@@ -245,47 +289,52 @@ Brick_t rotate_brick(Game_t *state){
         state->current_brick = temp;
         return previous;
 }
-void move_up(Game_t *state){
-    varnish(state);
-    Brick_t previous = rotate_brick(state);
-    if(!can_be_moved(state, 0, 0)){
+void move_up( ){
+    Game_t * state = game_init();
+    varnish( );
+    Brick_t previous = rotate_brick( );
+    if(!can_be_moved( 0, 0)){
         state->current_brick = previous;
     }   
-    appear(state);
+    appear( );
     state->current_state = MOVING;
 
 }
 
-void moved(Game_t *state){
-    if(can_be_moved(state, 1, 0)){
-        varnish(state);
+void moved( ){
+    Game_t * state = game_init();
+    if(can_be_moved( 1, 0)){
+        varnish( );
         ++CUR_BRICK_Y;
-        appear(state);
+        appear( );
         state->current_state = MOVING;
     }else {
         state->current_state = COLLIDE;
     }
 }
-void move_left(Game_t *state){
-    if(can_be_moved(state, 0, -1)){
-        varnish(state);
+void move_left( ){
+    Game_t * state = game_init();
+    if(can_be_moved( 0, -1)){
+        varnish ();
         // ++CUR_BRICK_Y;
         --CUR_BRICK_X;
-        appear(state);
+        appear ();
     }
     state->current_state = MOVING;
 }
-void move_right(Game_t *state){
-    if(can_be_moved(state, 0, 1)){
-        varnish(state);
+void move_right( ){
+    Game_t * state = game_init();
+    if(can_be_moved( 0, 1)){
+        varnish ();
         ++CUR_BRICK_X;
         // ++CUR_BRICK_Y;
-        appear(state);
+        appear ();
     }
     state->current_state = MOVING;
 }
 
-int can_be_moved(Game_t *state, int delta_row, int delta_col){
+int can_be_moved( int delta_row, int delta_col){
+    Game_t * state = game_init();
 int res = 1;
 int y = CUR_BRICK_Y +delta_row; 
 int x = CUR_BRICK_X + delta_col;
@@ -295,7 +344,7 @@ for(int i = 0; i < BRICK_N && res; i++){
         if ((x + j < 0 || x + j >= COLS_FIELD ||
             y + i >= ROWS_FIELD) && state->current_brick.matrix[i][j]) {
             res = 0;
-        } else if ((state->current_field.field[y + i][x + j] &&state->current_brick.matrix[i][j] && (!check_brick(state, delta_row, delta_col, i, j)))) {
+        } else if ((state->current_field.field[y + i][x + j] &&state->current_brick.matrix[i][j] && (!check_brick( delta_row, delta_col, i, j)))) {
             res = 0;
         }
     }
@@ -303,7 +352,8 @@ for(int i = 0; i < BRICK_N && res; i++){
 
 return res;
 }
-int check_brick(Game_t *state, int delta_y, int delta_x, int i, int j){
+int check_brick( int delta_y, int delta_x, int i, int j){
+    Game_t * state = game_init();
     int res = 1;
     if(delta_y >= 0){
         if(i+delta_y >= BRICK_N || j+delta_x < 0 || j+delta_x >= BRICK_N){
@@ -316,7 +366,8 @@ int check_brick(Game_t *state, int delta_y, int delta_x, int i, int j){
     
     return res; 
 }
-void appear(Game_t *state){
+void appear( ){
+    Game_t * state = game_init();
     for(int y = CUR_BRICK_Y, i = 0; y < BRICK_N + CUR_BRICK_Y; y++, i++){
         for(int x = CUR_BRICK_X, j = 0; x < BRICK_N + CUR_BRICK_X; x++, j++){
             if(state->current_brick.matrix[i][j] != 0){
@@ -325,7 +376,8 @@ void appear(Game_t *state){
         }
     }
 }
-void varnish(Game_t *state){
+void varnish( ){
+    Game_t * state = game_init();
     for(int y = CUR_BRICK_Y, i = 0; y < BRICK_N + CUR_BRICK_Y && ALLOWED; y++, i++){
         for(int x = CUR_BRICK_X, j = 0; x < BRICK_N + CUR_BRICK_X && ALLOWED; x++, j++){
             if(state->current_field.field[y][x] == state->current_brick.matrix[i][j])
