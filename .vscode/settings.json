@@ -5,6 +5,9 @@
         "frog_backend.h": "c",
         "objects.h": "c",
         "string.h": "c",
-        "frontend.h": "c"
+        "frontend.h": "c",
+        "fsm_header.h": "c",
+        "logic.h": "c",
+        "s21_tests.h": "c"
     }
 }

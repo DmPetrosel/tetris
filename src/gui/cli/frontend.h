@@ -5,7 +5,7 @@
 
 void print_game_field(Game_t game);
 void print_start(Game_t *game);
-void print_pause (Game_t *game);
+void print_pause(Game_t *game);
 void print_next(Game_t *game);
 
 void clear_screen(Game_t *game);

@@ -6,14 +6,13 @@
 
 #define GET_USER_INPUT getch()
 
-
-#define WIN_INIT(time) {\
-                             initscr();\
-                             noecho();\
-                             curs_set(0);\
-                             keypad(stdscr, TRUE);\
-                        }
-
+#define WIN_INIT(time)    \
+  {                       \
+    initscr();            \
+    noecho();             \
+    curs_set(0);          \
+    keypad(stdscr, TRUE); \
+  }
 
 #define BRICK_N 4
 
@@ -26,10 +25,11 @@
 #define ALLOWED state->current_brick.allowed
 #define HSFILE "high_score.txt"
 
-#define SPEED_STEP 70;
-
-#define SUCCESS   0
-#define ERROR     1
+#define SPEED_STEP 80
+#define SPEED_START 1000
+#define SPEED_MIN 50
+#define SUCCESS 0
+#define ERROR 1
 
 #define ESCAPE 27
 #define ENTER_KEY 10
