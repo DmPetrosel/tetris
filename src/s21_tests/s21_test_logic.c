@@ -1,5 +1,6 @@
-#include "s21_tests.h"
 #include <stdio.h>
+
+#include "s21_tests.h"
 START_TEST(s21_t_start_1) {
   Game_t *state = game_init();
   start();
@@ -19,17 +20,15 @@ START_TEST(s21_t_clean_screen_1) {
   ck_assert_int_eq(state->current_field.field[0][1], 0);
   ck_assert_int_eq(state->current_field.field[0][2], 0);
   ck_assert_int_eq(state->current_field.field[0][3], 0);
-
 }
 START_TEST(s21_t_gameover_1) {
   Game_t *state = game_init();
   gameover();
   ck_assert_int_eq(state->break_flag, 0);
-
 }
 START_TEST(s21_t_shift_field_down_and_check_strike_1) {
   Game_t *state = game_init();
-clean_screan();
+  clean_screan();
   for (int i = ROWS_FIELD - 4; i < ROWS_FIELD; i++) {
     for (int j = 0; j < COLS_FIELD; j++) {
       state->current_field.field[i][j] = 1;
@@ -41,7 +40,6 @@ clean_screan();
 
   ck_assert_int_eq(state->current_field.field[ROWS_FIELD - 1][0], 0);
   ck_assert_int_eq(state->current_field.field[ROWS_FIELD - 1][1], 0);
-
 }
 START_TEST(s21_t_collide_and_spawn) {
   Game_t *state = game_init();
@@ -55,18 +53,16 @@ START_TEST(s21_t_collide_and_spawn) {
   }
   collide();
   ck_assert_int_eq(state->current_state, 5);
-
 }
 START_TEST(s21_t_roteate_brick) {
   Game_t *state = game_init();
-    clean_screan();
+  clean_screan();
   for (int i = 0; i < 4; i++) {
-    for(int j = 0; j < 4; j++) {
-    if(j== 0)
+    for (int j = 0; j < 4; j++) {
+      if (j == 0)
         state->current_brick.matrix[i][j] = 1;
-    else
+      else
         state->current_brick.matrix[i][j] = 0;
-
     }
   }
   state->current_brick.x = 5;
@@ -77,18 +73,16 @@ START_TEST(s21_t_roteate_brick) {
   }
 
   ck_assert_int_eq(state->current_state, 2);
-
 }
 START_TEST(s21_t_moved) {
   Game_t *state = game_init();
-   clean_screan();
+  clean_screan();
   for (int i = 0; i < 4; i++) {
-    for(int j = 0; j < 4; j++) {
-    if(j== 0)
+    for (int j = 0; j < 4; j++) {
+      if (j == 0)
         state->current_brick.matrix[i][j] = 1;
-    else
+      else
         state->current_brick.matrix[i][j] = 0;
-
     }
   }
   state->current_brick.x = 5;
@@ -99,18 +93,16 @@ START_TEST(s21_t_moved) {
   }
 
   ck_assert_int_eq(state->current_state, 2);
-
 }
 START_TEST(s21_t_move_left) {
   Game_t *state = game_init();
   clean_screan();
   for (int i = 0; i < 4; i++) {
-    for(int j = 0; j < 4; j++) {
-    if(j== 0)
+    for (int j = 0; j < 4; j++) {
+      if (j == 0)
         state->current_brick.matrix[i][j] = 1;
-    else
+      else
         state->current_brick.matrix[i][j] = 0;
-
     }
   }
   state->current_brick.x = 5;
@@ -121,37 +113,34 @@ START_TEST(s21_t_move_left) {
   }
 
   ck_assert_int_eq(state->current_state, 2);
-
 }
 START_TEST(s21_t_move_right) {
   Game_t *state = game_init();
   clean_screan();
   for (int i = 0; i < 4; i++) {
-    for(int j = 0; j < 4; j++) {
-    if(j== 0)
+    for (int j = 0; j < 4; j++) {
+      if (j == 0)
         state->current_brick.matrix[i][j] = 1;
-    else
+      else
         state->current_brick.matrix[i][j] = 0;
-
     }
   }
   state->current_brick.x = 5;
   state->current_brick.y = 5;
   move_right();
-    // for (int i = 0; i < ROWS_FIELD; i++) {
-    //     for (int j = 0; j < COLS_FIELD; j++) {
-    //         if (state->current_field.field[i][j] == 0) printf("..");
-    //         if (state->current_field.field[i][j] == 1) printf("[]");
-    //     }
-    //     printf("\n");
-    // }
-  
+  // for (int i = 0; i < ROWS_FIELD; i++) {
+  //     for (int j = 0; j < COLS_FIELD; j++) {
+  //         if (state->current_field.field[i][j] == 0) printf("..");
+  //         if (state->current_field.field[i][j] == 1) printf("[]");
+  //     }
+  //     printf("\n");
+  // }
+
   for (int i = CUR_BRICK_Y; i < CUR_BRICK_Y + 4; i++) {
     ck_assert_int_eq(state->current_field.field[i][6], 1);
   }
 
   ck_assert_int_eq(state->current_state, 2);
-
 }
 Suite *test_logic(void) {
   Suite *s = suite_create("===Game logic===");

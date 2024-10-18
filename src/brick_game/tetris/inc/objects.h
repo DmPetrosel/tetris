@@ -9,7 +9,10 @@
 #include <time.h>
 
 #include "defines.h"
-
+/**
+ * @brief Stucture gives by task.
+ *
+ */
 typedef enum {
   Start,
   Pause,
@@ -20,7 +23,10 @@ typedef enum {
   Down,
   Action
 } UserAction_t;
-
+/**
+ * @brief FSM states of the game.
+ *
+ */
 typedef enum {
   START,
   SPAWN,
@@ -30,18 +36,29 @@ typedef enum {
   GAMEOVER,
 } GameState_t;
 
+/**
+ * @brief Game field.
+ *
+ */
 typedef struct {
   int field[ROWS_FIELD][COLS_FIELD];
 
 } game_field;
 
+/**
+ * @brief Brick structure.
+ *
+ */
 typedef struct {
   int matrix[4][4];
   int x, y;
   int allowed;  // 1 True, 0 Not allowed
 
 } Brick_t;
-
+/**
+ * @brief GameInfo_t structure. Gives by task.
+ *
+ */
 typedef struct {
   int **field;
   int **next;
@@ -51,7 +68,10 @@ typedef struct {
   int speed;
   int pause;
 } GameInfo_t;
-
+/**
+ * @brief Main game structure.
+ *
+ */
 typedef struct {
   game_field current_field;
   GameState_t current_state;

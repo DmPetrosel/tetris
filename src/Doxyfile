@@ -1,0 +1,72 @@
+# The PROJECT_NAME tag is a single word (or a sequence of words surrounded
+# by quotes) that should identify the project.
+PROJECT_NAME           = "TETRIS"
+
+# The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute)
+# base path where the generated documentation will be put.
+OUTPUT_DIRECTORY       = docs
+
+# The RECURSIVE tag can be used to specify whether or not subdirectories
+# should be searched for input files as well.
+RECURSIVE              = YES
+
+# The EXTRACT_ALL tag defaults to NO.
+EXTRACT_ALL            = YES
+
+# The EXTRACT_PRIVATE tag defaults to NO.
+EXTRACT_PRIVATE        = NO
+
+# The EXTRACT_STATIC tag defaults to NO.
+EXTRACT_STATIC         = NO
+
+# The EXTRACT_LOCAL_CLASSES tag defaults to NO.
+EXTRACT_LOCAL_CLASSES  = NO
+
+# If the MARKDOWN_SUPPORT tag is enabled (YES) then doxygen pre-processes
+# all comments according to the Markdown format, which allows for more readable
+# documentation.
+MARKDOWN_SUPPORT       = YES
+
+# The INPUT tag can be used to specify the files and/or directories that contain
+# documented source files.
+INPUT                  = .
+
+# If the HTML_OUTPUT tag is set, the directory to which the HTML files are
+# generated will be relative to the default HTML output directory.
+HTML_OUTPUT            = NO
+
+# The GENERATE_LATEX tag can be used to enable/disable the generation of
+# a LaTeX document.
+GENERATE_LATEX         = NO
+
+# The GENERATE_XML tag can be used to enable/disable the generation of
+# an XML output.
+GENERATE_XML           = NO
+
+# The GENERATE_MAN tag can be used to enable/disable the generation
+# of a man page.
+GENERATE_MAN           = NO
+
+# The GENERATE_RTF tag can be used to enable/disable RTF (Rich Text Format)
+# output.
+GENERATE_RTF           = YES
+
+# The GENERATE_PERLMOD tag can be used to enable/disable the generation
+# of Perl module output.
+GENERATE_PERLMOD       = NO
+
+# The GENERATE_DOCSET tag can be used to enable/disable the generation
+# of Apple docsets.
+GENERATE_DOCSET        = NO
+
+# The GENERATE_AUTOGEN tag can be used to enable/disable the generation
+# of an AutoGen Definitions File.
+GENERATE_AUTOGEN       = NO
+
+# The GENERATE_TESTLIST tag can be used to enable/disable the generation
+# of a list of test cases for test driven development.
+GENERATE_TESTLIST      = NO
+
+JAVADOC_BANNER = YES
+
+JAVADOC_AUTOBRIEF = YES
